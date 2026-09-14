@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Parent Portal | Student Progress</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        ::-webkit-scrollbar { display: none; }
+        body { -ms-overflow-style: none; scrollbar-width: none; background-color: #f3f4f6; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .accordion-content { transition: max-height 0.3s ease-out; overflow: hidden; max-height: 0; }
+        .accordion-content.open { max-height: 500px; }
+    </style>
+</head>
+<body class="font-sans text-gray-800 antialiased h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-blue-600" id="headerTitle">Parent Portal</h1>
+            <button onclick="toggleLanguage()" class="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium border border-gray-200 active:bg-gray-200 transition">
+                <span id="langIndicator">🇮🇩 ID</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-md mx-auto w-full p-4 relative">
+        
+        <!-- LOGIN VIEW -->
+        <div id="loginView" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-8">
+            <div class="text-center mb-6">
+                <div class="inline-block p-3 bg-blue-50 rounded-full mb-3">
+                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800" id="loginHeading">Welcome Back</h2>
+                <p class="text-gray-500 text-sm mt-1" id="loginSubheading">Enter credentials to view progress.</p>
+            </div>
+            <div id="loginError" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 text-center"></div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" id="labelStudentId">Student ID</label>
+                    <input type="text" id="studentIdInput" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none uppercase" placeholder="e.g. STU-001">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1" id="labelPin">Security PIN</label>
+                    <input type="password" id="pinInput" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••" inputmode="numeric" pattern="[0-9]*">
+                </div>
+                <button onclick="attemptLogin()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-700 flex justify-center items-center h-12 shadow-md">
+                    <span id="loginBtnText">Access Portal</span>
+                    <div id="loginLoader" class="loader hidden ml-2 border-t-white"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="dashboardView" class="hidden pb-20">
+            <div class="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-5 text-white mb-6 shadow-md relative overflow-hidden">
+                <div class="relative z-10">
+                    <p class="text-blue-100 text-sm font-medium" id="dashWelcome">Welcome, Parent of</p>
+                    <h2 class="text-2xl font-bold mt-1" id="studentNameDisplay">Student Name</h2>
+                </div>
+                <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-white opacity-10 -mr-8 -mt-8"></div>
+            </div>
+
+            <div class="flex bg-gray-200/60 p-1 rounded-xl mb-6">
+                <button onclick="switchTab('logs')" id="tabLogs" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-blue-600 transition">
+                    Daily Logs
+                </button>
+                <button onclick="switchTab('reports')" id="tabReports" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">
+                    Progress Reports
+                </button>
+            </div>
+
+            <div id="dashboardContent" class="min-h-[300px] relative">
+                <div id="dataLoader" class="absolute inset-0 flex flex-col items-center justify-center z-10">
+                    <div class="loader mb-2"></div>
+                    <p class="text-sm text-gray-500" id="loadingText">Fetching records...</p>
+                </div>
+                <div id="logsContent" class="hidden space-y-4"></div>
+                <div id="reportsContent" class="hidden space-y-4"></div>
+            </div>
+        </div>
+    </main>
+
+    <div id="bottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 pb-safe pb-6 shadow-sm">
+        <div class="max-w-md mx-auto flex justify-center">
+             <button onclick="logout()" class="flex items-center text-red-500 font-medium px-6 py-2 rounded-full hover:bg-red-50 transition">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <span id="logoutText">Sign Out</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzygNz175ygrpne2aZiJOHhhtj4u8uVGM0UgsS_kMh6wqXqOxyBCPWcMPBJednTHa1Wxg/exec';
+        let currentLang = 'en';
+        let loggedInStudentId = null;
+
+        const dict = {
+            'en': {
+                langBtn: '🇮🇩 ID', title: 'Parent Portal', loginHeading: 'Welcome Back', loginSubheading: 'Enter credentials to view progress.',
+                labelId: 'Student ID', labelPin: 'Security PIN', loginBtn: 'Access Portal', welcomeMsg: 'Welcome, Parent of',
+                tabLogs: 'Daily Logs', tabReports: 'Progress Reports', loadingText: 'Fetching records...', logoutText: 'Sign Out',
+                emptyLogs: 'No daily logs found.', emptyReports: 'No reports found.', downloadBtn: 'Download Full PDF Report',
+                errorEmpty: 'Please enter ID and PIN.', errorNetwork: 'Network error.', termLabel: 'Period',
+                programsLabel: 'Programs', summaryLabel: 'Teacher Notes', learnedLabel: 'Today I learned:',
+                projectLabel: 'Project:', problemLabel: 'Challenges Faced:', solutionLabel: 'How I Solved It:', 
+                viewDetails: 'View Details', viewProjectBtn: 'View Project Link'
+            },
+            'id': {
+                langBtn: '🇬🇧 EN', title: 'Portal Orang Tua', loginHeading: 'Selamat Datang', loginSubheading: 'Masukkan data siswa untuk masuk.',
+                labelId: 'ID Siswa', labelPin: 'PIN Keamanan', loginBtn: 'Masuk Portal', welcomeMsg: 'Selamat datang, Orang Tua dari',
+                tabLogs: 'Jurnal Harian', tabReports: 'Rapor Belajar', loadingText: 'Mengambil data...', logoutText: 'Keluar',
+                emptyLogs: 'Belum ada jurnal.', emptyReports: 'Belum ada rapor.', downloadBtn: 'Unduh Rapor PDF Lengkap',
+                errorEmpty: 'Mohon isi ID dan PIN.', errorNetwork: 'Gangguan jaringan.', termLabel: 'Periode',
+                programsLabel: 'Program', summaryLabel: 'Catatan Guru', learnedLabel: 'Hari ini saya belajar:',
+                projectLabel: 'Proyek:', problemLabel: 'Tantangan yang Dihadapi:', solutionLabel: 'Cara Saya Menyelesaikan:',
+                viewDetails: 'Lihat Detail', viewProjectBtn: 'Lihat Link Proyek'
+            }
+        };
+
+        function toggleLanguage() { currentLang = currentLang === 'en' ? 'id' : 'en'; applyLanguage(); }
+
+        function applyLanguage() {
+            const t = dict[currentLang];
+            document.getElementById('langIndicator').innerText = t.langBtn;
+            document.getElementById('headerTitle').innerText = t.title;
+            document.getElementById('loginHeading').innerText = t.loginHeading;
+            document.getElementById('loginSubheading').innerText = t.loginSubheading;
+            document.getElementById('labelStudentId').innerText = t.labelId;
+            document.getElementById('labelPin').innerText = t.labelPin;
+            document.getElementById('loginBtnText').innerText = t.loginBtn;
+            document.getElementById('dashWelcome').innerText = t.welcomeMsg;
+            document.getElementById('tabLogs').innerText = t.tabLogs;
+            document.getElementById('tabReports').innerText = t.tabReports;
+            document.getElementById('loadingText').innerText = t.loadingText;
+            document.getElementById('logoutText').innerText = t.logoutText;
+            if (loggedInStudentId) fetchDashboardData(loggedInStudentId); 
+        }
+
+        function switchTab(tab) {
+            document.getElementById('tabLogs').className = `flex-1 py-2 text-sm font-semibold rounded-lg transition ${tab === 'logs' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`;
+            document.getElementById('tabReports').className = `flex-1 py-2 text-sm font-semibold rounded-lg transition ${tab === 'reports' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`;
+            document.getElementById('logsContent').classList.toggle('hidden', tab !== 'logs');
+            document.getElementById('reportsContent').classList.toggle('hidden', tab !== 'reports');
+        }
+        
+        async function attemptLogin() {
+            const id = document.getElementById('studentIdInput').value.trim();
+            const pin = document.getElementById('pinInput').value.trim();
+            if (!id || !pin) return showError(dict[currentLang].errorEmpty);
+            
+            setLoading(true, 'login');
+            try {
+                const res = await fetch(`${GAS_WEB_APP_URL}?action=verifyLogin&studentId=${encodeURIComponent(id)}&pin=${encodeURIComponent(pin)}`);
+                const data = await res.json();
+                if (data.success) {
+                    loggedInStudentId = data.data.studentId;
+                    document.getElementById('studentNameDisplay').innerText = data.data.studentName;
+                    document.getElementById('loginView').classList.add('hidden');
+                    document.getElementById('dashboardView').classList.remove('hidden');
+                    document.getElementById('bottomNav').classList.remove('hidden');
+                    fetchDashboardData(loggedInStudentId);
+                } else showError(data.message);
+            } catch (err) { showError(dict[currentLang].errorNetwork); }
+            finally { setLoading(false, 'login'); }
+        }
+
+        async function fetchDashboardData(studentId) {
+            setLoading(true, 'dashboard');
+            try {
+                const res = await fetch(`${GAS_WEB_APP_URL}?action=getDashboardData&studentId=${encodeURIComponent(studentId)}`);
+                const data = await res.json();
+                if (data.success) { renderLogs(data.data.dailyLogs); renderReports(data.data.reports); }
+            } catch (err) { console.error(err); }
+            finally { setLoading(false, 'dashboard'); switchTab('logs'); }
+        }
+
+        function toggleAccordion(id) {
+            const el = document.getElementById(`acc-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            if (el.classList.contains('open')) {
+                el.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                el.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        function renderLogs(logs) {
+            const container = document.getElementById('logsContent');
+            const t = dict[currentLang];
+            if (!logs.length) return container.innerHTML = `<div class="text-center p-6 text-gray-400 bg-white rounded-xl">${t.emptyLogs}</div>`;
+
+            let html = '';
+            logs.forEach((log, i) => {
+                const hasDetails = log.problemFaced || log.solution || log.projectName;
+                
+                let linkHtml = '';
+                if(log.projectLink && log.projectLink.trim() !== "") {
+                    let safeLink = log.projectLink.startsWith('http') ? log.projectLink : 'https://' + log.projectLink;
+                    linkHtml = `<a href="${safeLink}" target="_blank" class="mt-3 inline-flex items-center text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg">${t.viewProjectBtn}</a>`;
+                }
+
+                html += `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${log.program || 'Class'}</span>
+                        <span class="text-xs font-bold text-gray-400">${log.date}</span>
+                    </div>
+                    <p class="text-xs text-gray-500 font-medium mb-1">${t.learnedLabel}</p>
+                    <p class="text-gray-800 font-medium text-sm leading-tight mb-3">${log.learned || '-'}</p>
+                    
+                    ${hasDetails ? `
+                    <div class="border-t border-gray-50 pt-2 mt-2">
+                        <button onclick="toggleAccordion(${i})" class="flex items-center justify-between w-full text-xs font-medium text-gray-500 hover:text-gray-700">
+                            <span>${t.viewDetails}</span>
+                            <svg id="icon-${i}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </button>
+                        <div id="acc-${i}" class="accordion-content">
+                            <div class="py-3 space-y-3">
+                                ${log.projectName ? `<div><span class="text-[11px] font-bold text-gray-400 uppercase">${t.projectLabel}</span><p class="text-sm text-gray-700">${log.projectName}</p></div>` : ''}
+                                ${log.problemFaced ? `<div><span class="text-[11px] font-bold text-red-400 uppercase">${t.problemLabel}</span><p class="text-sm text-gray-700">${log.problemFaced}</p></div>` : ''}
+                                ${log.solution ? `<div><span class="text-[11px] font-bold text-green-500 uppercase">${t.solutionLabel}</span><p class="text-sm text-gray-700">${log.solution}</p></div>` : ''}
+                                ${linkHtml}
+                            </div>
+                        </div>
+                    </div>` : linkHtml}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderReports(reports) {
+            const container = document.getElementById('reportsContent');
+            const t = dict[currentLang];
+            if (!reports.length) return container.innerHTML = `<div class="text-center p-6 text-gray-400 bg-white rounded-xl">${t.emptyReports}</div>`;
+
+            let html = '';
+            reports.forEach(r => {
+                let safeUrl = r.url.trim().startsWith('http') ? r.url.trim() : 'https://' + r.url.trim();
+                html += `
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-4">
+                    <div class="flex justify-between items-end border-b border-gray-100 pb-3 mb-3">
+                        <div>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">${t.termLabel}</p>
+                            <h3 class="text-lg font-bold text-blue-600 leading-tight">${r.term}</h3>
+                        </div>
+                        <div class="text-right">
+                             <p class="text-[10px] font-bold text-gray-400 uppercase">${t.programsLabel}</p>
+                             <p class="text-xs font-semibold text-gray-700">${r.programs}</p>
+                        </div>
+                    </div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">${t.summaryLabel}</p>
+                    <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-blue-400 text-gray-700 text-sm leading-relaxed mb-4">
+                        ${r.summary}
+                    </div>
+                    ${r.url ? `<a href="${safeUrl}" target="_blank" class="block w-full text-center bg-blue-50 text-blue-600 font-semibold py-3 rounded-lg hover:bg-blue-100 transition text-sm">
+                        <svg class="w-4 h-4 inline mr-1 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        ${t.downloadBtn}
+                    </a>` : ''}
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('loginError');
+            el.innerText = msg; el.classList.remove('hidden');
+        }
+
+        function setLoading(isLoading, ctx) {
+            if (ctx === 'login') {
+                document.getElementById('loginBtnText').classList.toggle('hidden', isLoading);
+                document.getElementById('loginLoader').classList.toggle('hidden', !isLoading);
+            } else {
+                document.getElementById('dataLoader').classList.toggle('hidden', !isLoading);
+                if(isLoading) { document.getElementById('logsContent').innerHTML = ''; document.getElementById('reportsContent').innerHTML = ''; }
+            }
+        }
+
+        function logout() {
+            loggedInStudentId = null;
+            document.getElementById('studentIdInput').value = ''; document.getElementById('pinInput').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('bottomNav').classList.add('hidden');
+            document.getElementById('loginView').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
