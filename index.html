@@ -3,12 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Parent Portal | Student Progress</title>
+    <title>Talk 'N Active | Parent Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Custom Brand Colors injected into Tailwind
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#F25C54',      // The coral/red from "TALK"
+                            darkred: '#B54D43',  // The deep red from the right arrow
+                            yellow: '#F4D35E',   // The yellow from "ACTIVE"
+                            black: '#1A1A1A'     // The black from "'N"
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         ::-webkit-scrollbar { display: none; }
-        body { -ms-overflow-style: none; scrollbar-width: none; background-color: #f3f4f6; }
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #3b82f6; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        body { -ms-overflow-style: none; scrollbar-width: none; background-color: #FAFAFA; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid #F25C54; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .accordion-content { transition: max-height 0.3s ease-out; overflow: hidden; max-height: 0; }
         .accordion-content.open { max-height: 500px; }
@@ -16,10 +33,12 @@
 </head>
 <body class="font-sans text-gray-800 antialiased h-screen flex flex-col">
 
+    <!-- Top Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-blue-600" id="headerTitle">Parent Portal</h1>
-            <button onclick="toggleLanguage()" class="bg-gray-100 px-3 py-1 rounded-full text-sm font-medium border border-gray-200 active:bg-gray-200 transition">
+            <!-- Brand Logo in Header -->
+            <img src="Header.png" alt="Talk 'N Active" class="h-8 object-contain">
+            <button onclick="toggleLanguage()" class="bg-gray-50 px-3 py-1.5 rounded-full text-xs font-bold text-gray-600 border border-gray-200 active:bg-gray-200 transition shadow-sm">
                 <span id="langIndicator">🇮🇩 ID</span>
             </button>
         </div>
@@ -28,25 +47,26 @@
     <main class="flex-grow max-w-md mx-auto w-full p-4 relative">
         
         <!-- LOGIN VIEW -->
-        <div id="loginView" class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mt-8">
-            <div class="text-center mb-6">
-                <div class="inline-block p-3 bg-blue-50 rounded-full mb-3">
-                    <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800" id="loginHeading">Welcome Back</h2>
-                <p class="text-gray-500 text-sm mt-1" id="loginSubheading">Enter credentials to view progress.</p>
+        <div id="loginView" class="bg-white p-8 rounded-3xl shadow-lg shadow-brand-red/5 border border-gray-100 mt-6">
+            <div class="text-center mb-8">
+                <!-- Large Brand Logo on Login -->
+                <img src="Header.png" alt="Talk 'N Active Logo" class="h-16 mx-auto mb-4 object-contain">
+                <h2 class="text-2xl font-extrabold text-brand-black" id="loginHeading">Welcome Back</h2>
+                <p class="text-brand-darkred font-medium text-sm mt-1 italic" id="loginSubheading">Empowering Minds, Inspiring Futures</p>
             </div>
-            <div id="loginError" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 text-center"></div>
-            <div class="space-y-4">
+            
+            <div id="loginError" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-xl border border-red-100 text-center font-medium"></div>
+            
+            <div class="space-y-5">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" id="labelStudentId">Student ID</label>
-                    <input type="text" id="studentIdInput" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none uppercase" placeholder="e.g. STU-001">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5" id="labelStudentId">Student ID</label>
+                    <input type="text" id="studentIdInput" class="w-full px-4 py-3.5 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none uppercase transition font-medium text-brand-black" placeholder="e.g. STU-001">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" id="labelPin">Security PIN</label>
-                    <input type="password" id="pinInput" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="••••••" inputmode="numeric" pattern="[0-9]*">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5" id="labelPin">Security PIN</label>
+                    <input type="password" id="pinInput" class="w-full px-4 py-3.5 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-brand-red focus:ring-2 focus:ring-brand-red/20 outline-none transition font-medium text-brand-black" placeholder="••••••" inputmode="numeric" pattern="[0-9]*">
                 </div>
-                <button onclick="attemptLogin()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-blue-700 flex justify-center items-center h-12 shadow-md">
+                <button onclick="attemptLogin()" class="w-full bg-brand-red text-white font-bold py-4 px-4 rounded-xl hover:bg-brand-darkred transition flex justify-center items-center shadow-lg shadow-brand-red/30 mt-2">
                     <span id="loginBtnText">Access Portal</span>
                     <div id="loginLoader" class="loader hidden ml-2 border-t-white"></div>
                 </button>
@@ -54,28 +74,32 @@
         </div>
 
         <!-- DASHBOARD VIEW -->
-        <div id="dashboardView" class="hidden pb-20">
-            <div class="bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl p-5 text-white mb-6 shadow-md relative overflow-hidden">
+        <div id="dashboardView" class="hidden pb-20 mt-2">
+            <!-- Brand Gradient Welcome Card -->
+            <div class="bg-gradient-to-br from-brand-red to-brand-darkred rounded-3xl p-6 text-white mb-6 shadow-xl shadow-brand-red/20 relative overflow-hidden">
                 <div class="relative z-10">
-                    <p class="text-blue-100 text-sm font-medium" id="dashWelcome">Welcome, Parent of</p>
-                    <h2 class="text-2xl font-bold mt-1" id="studentNameDisplay">Student Name</h2>
+                    <p class="text-brand-yellow font-bold text-xs uppercase tracking-widest mb-1" id="dashWelcome">Welcome, Parent of</p>
+                    <h2 class="text-3xl font-extrabold mt-1 tracking-tight" id="studentNameDisplay">Student Name</h2>
                 </div>
-                <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-white opacity-10 -mr-8 -mt-8"></div>
+                <!-- Abstract teardrop decoration mimicking the logo -->
+                <div class="absolute -top-6 -right-6 w-32 h-32 bg-brand-yellow opacity-20 rounded-full blur-2xl"></div>
+                <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-white opacity-10 rounded-full"></div>
             </div>
 
-            <div class="flex bg-gray-200/60 p-1 rounded-xl mb-6">
-                <button onclick="switchTab('logs')" id="tabLogs" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white shadow-sm text-blue-600 transition">
+            <!-- Tab Navigation -->
+            <div class="flex bg-gray-200/50 p-1.5 rounded-2xl mb-6">
+                <button onclick="switchTab('logs')" id="tabLogs" class="flex-1 py-2.5 text-sm font-bold rounded-xl bg-white shadow-sm text-brand-red transition">
                     Daily Logs
                 </button>
-                <button onclick="switchTab('reports')" id="tabReports" class="flex-1 py-2 text-sm font-semibold rounded-lg text-gray-500 hover:text-gray-700 transition">
+                <button onclick="switchTab('reports')" id="tabReports" class="flex-1 py-2.5 text-sm font-bold rounded-xl text-gray-500 hover:text-gray-800 transition">
                     Progress Reports
                 </button>
             </div>
 
             <div id="dashboardContent" class="min-h-[300px] relative">
                 <div id="dataLoader" class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                    <div class="loader mb-2"></div>
-                    <p class="text-sm text-gray-500" id="loadingText">Fetching records...</p>
+                    <div class="loader mb-3"></div>
+                    <p class="text-sm font-medium text-gray-500 animate-pulse" id="loadingText">Fetching records...</p>
                 </div>
                 <div id="logsContent" class="hidden space-y-4"></div>
                 <div id="reportsContent" class="hidden space-y-4"></div>
@@ -83,9 +107,10 @@
         </div>
     </main>
 
-    <div id="bottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 pb-safe pb-6 shadow-sm">
+    <!-- Bottom Navigation -->
+    <div id="bottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 pb-safe pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-50">
         <div class="max-w-md mx-auto flex justify-center">
-             <button onclick="logout()" class="flex items-center text-red-500 font-medium px-6 py-2 rounded-full hover:bg-red-50 transition">
+             <button onclick="logout()" class="flex items-center text-gray-500 font-bold px-6 py-2.5 rounded-full hover:bg-gray-50 hover:text-brand-darkred transition">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                 <span id="logoutText">Sign Out</span>
             </button>
@@ -93,13 +118,16 @@
     </div>
 
     <script>
+        // --- PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ---
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzygNz175ygrpne2aZiJOHhhtj4u8uVGM0UgsS_kMh6wqXqOxyBCPWcMPBJednTHa1Wxg/exec';
+        // --------------------------------------------------------
+
         let currentLang = 'en';
         let loggedInStudentId = null;
 
         const dict = {
             'en': {
-                langBtn: '🇮🇩 ID', title: 'Parent Portal', loginHeading: 'Welcome Back', loginSubheading: 'Enter credentials to view progress.',
+                langBtn: '🇮🇩 ID', loginHeading: 'Welcome Back', loginSubheading: 'Empowering Minds, Inspiring Futures',
                 labelId: 'Student ID', labelPin: 'Security PIN', loginBtn: 'Access Portal', welcomeMsg: 'Welcome, Parent of',
                 tabLogs: 'Daily Logs', tabReports: 'Progress Reports', loadingText: 'Fetching records...', logoutText: 'Sign Out',
                 emptyLogs: 'No daily logs found.', emptyReports: 'No reports found.', downloadBtn: 'Download Full PDF Report',
@@ -109,8 +137,8 @@
                 viewDetails: 'View Details', viewProjectBtn: 'View Project Link'
             },
             'id': {
-                langBtn: '🇬🇧 EN', title: 'Portal Orang Tua', loginHeading: 'Selamat Datang', loginSubheading: 'Masukkan data siswa untuk masuk.',
-                labelId: 'ID Siswa', labelPin: 'PIN Keamanan', loginBtn: 'Masuk Portal', welcomeMsg: 'Selamat datang, Orang Tua dari',
+                langBtn: '🇬🇧 EN', loginHeading: 'Selamat Datang', loginSubheading: 'Empowering Minds, Inspiring Futures',
+                labelId: 'ID Siswa', labelPin: 'PIN Keamanan', loginBtn: 'Masuk Portal', welcomeMsg: 'Orang Tua dari',
                 tabLogs: 'Jurnal Harian', tabReports: 'Rapor Belajar', loadingText: 'Mengambil data...', logoutText: 'Keluar',
                 emptyLogs: 'Belum ada jurnal.', emptyReports: 'Belum ada rapor.', downloadBtn: 'Unduh Rapor PDF Lengkap',
                 errorEmpty: 'Mohon isi ID dan PIN.', errorNetwork: 'Gangguan jaringan.', termLabel: 'Periode',
@@ -125,7 +153,6 @@
         function applyLanguage() {
             const t = dict[currentLang];
             document.getElementById('langIndicator').innerText = t.langBtn;
-            document.getElementById('headerTitle').innerText = t.title;
             document.getElementById('loginHeading').innerText = t.loginHeading;
             document.getElementById('loginSubheading').innerText = t.loginSubheading;
             document.getElementById('labelStudentId').innerText = t.labelId;
@@ -140,8 +167,8 @@
         }
 
         function switchTab(tab) {
-            document.getElementById('tabLogs').className = `flex-1 py-2 text-sm font-semibold rounded-lg transition ${tab === 'logs' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`;
-            document.getElementById('tabReports').className = `flex-1 py-2 text-sm font-semibold rounded-lg transition ${tab === 'reports' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500 hover:text-gray-700'}`;
+            document.getElementById('tabLogs').className = `flex-1 py-2.5 text-sm font-bold rounded-xl transition ${tab === 'logs' ? 'bg-white shadow-sm text-brand-red' : 'text-gray-500 hover:text-gray-800'}`;
+            document.getElementById('tabReports').className = `flex-1 py-2.5 text-sm font-bold rounded-xl transition ${tab === 'reports' ? 'bg-white shadow-sm text-brand-red' : 'text-gray-500 hover:text-gray-800'}`;
             document.getElementById('logsContent').classList.toggle('hidden', tab !== 'logs');
             document.getElementById('reportsContent').classList.toggle('hidden', tab !== 'reports');
         }
@@ -192,7 +219,7 @@
         function renderLogs(logs) {
             const container = document.getElementById('logsContent');
             const t = dict[currentLang];
-            if (!logs.length) return container.innerHTML = `<div class="text-center p-6 text-gray-400 bg-white rounded-xl">${t.emptyLogs}</div>`;
+            if (!logs.length) return container.innerHTML = `<div class="text-center p-8 text-gray-400 bg-white rounded-2xl border border-gray-100">${t.emptyLogs}</div>`;
 
             let html = '';
             logs.forEach((log, i) => {
@@ -201,29 +228,32 @@
                 let linkHtml = '';
                 if(log.projectLink && log.projectLink.trim() !== "") {
                     let safeLink = log.projectLink.startsWith('http') ? log.projectLink : 'https://' + log.projectLink;
-                    linkHtml = `<a href="${safeLink}" target="_blank" class="mt-3 inline-flex items-center text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg">${t.viewProjectBtn}</a>`;
+                    linkHtml = `<a href="${safeLink}" target="_blank" class="mt-4 flex justify-center items-center text-xs font-bold text-brand-darkred bg-brand-red/10 hover:bg-brand-red/20 py-2.5 rounded-xl transition w-full">
+                                    <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    ${t.viewProjectBtn}
+                                </a>`;
                 }
 
                 html += `
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-3">
-                    <div class="flex justify-between items-start mb-2">
-                        <span class="bg-indigo-50 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">${log.program || 'Class'}</span>
-                        <span class="text-xs font-bold text-gray-400">${log.date}</span>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-4 transition hover:shadow-md">
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="bg-brand-yellow/20 text-yellow-800 text-[10px] font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-wider">${log.program || 'Class'}</span>
+                        <span class="text-xs font-bold text-gray-400 bg-gray-50 px-2 py-1 rounded-md border border-gray-100">${log.date}</span>
                     </div>
-                    <p class="text-xs text-gray-500 font-medium mb-1">${t.learnedLabel}</p>
-                    <p class="text-gray-800 font-medium text-sm leading-tight mb-3">${log.learned || '-'}</p>
+                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-wide mb-1">${t.learnedLabel}</p>
+                    <p class="text-gray-800 font-semibold text-sm leading-relaxed mb-4">${log.learned || '-'}</p>
                     
                     ${hasDetails ? `
-                    <div class="border-t border-gray-50 pt-2 mt-2">
-                        <button onclick="toggleAccordion(${i})" class="flex items-center justify-between w-full text-xs font-medium text-gray-500 hover:text-gray-700">
+                    <div class="border-t border-gray-100 pt-3 mt-2">
+                        <button onclick="toggleAccordion(${i})" class="flex items-center justify-between w-full text-xs font-bold text-brand-red hover:text-brand-darkred transition">
                             <span>${t.viewDetails}</span>
-                            <svg id="icon-${i}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg id="icon-${i}" class="w-4 h-4 transition-transform duration-300 bg-brand-red/10 rounded-full p-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                         </button>
                         <div id="acc-${i}" class="accordion-content">
-                            <div class="py-3 space-y-3">
-                                ${log.projectName ? `<div><span class="text-[11px] font-bold text-gray-400 uppercase">${t.projectLabel}</span><p class="text-sm text-gray-700">${log.projectName}</p></div>` : ''}
-                                ${log.problemFaced ? `<div><span class="text-[11px] font-bold text-red-400 uppercase">${t.problemLabel}</span><p class="text-sm text-gray-700">${log.problemFaced}</p></div>` : ''}
-                                ${log.solution ? `<div><span class="text-[11px] font-bold text-green-500 uppercase">${t.solutionLabel}</span><p class="text-sm text-gray-700">${log.solution}</p></div>` : ''}
+                            <div class="pt-4 pb-2 space-y-4">
+                                ${log.projectName ? `<div><span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">${t.projectLabel}</span><p class="text-sm text-gray-700 font-medium">${log.projectName}</p></div>` : ''}
+                                ${log.problemFaced ? `<div class="bg-red-50 p-3 rounded-xl border border-red-100"><span class="text-[10px] font-extrabold text-red-500 uppercase tracking-wider flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>${t.problemLabel}</span><p class="text-sm text-gray-800 mt-1 font-medium">${log.problemFaced}</p></div>` : ''}
+                                ${log.solution ? `<div class="bg-green-50 p-3 rounded-xl border border-green-100"><span class="text-[10px] font-extrabold text-green-600 uppercase tracking-wider flex items-center"><svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${t.solutionLabel}</span><p class="text-sm text-gray-800 mt-1 font-medium">${log.solution}</p></div>` : ''}
                                 ${linkHtml}
                             </div>
                         </div>
@@ -236,29 +266,36 @@
         function renderReports(reports) {
             const container = document.getElementById('reportsContent');
             const t = dict[currentLang];
-            if (!reports.length) return container.innerHTML = `<div class="text-center p-6 text-gray-400 bg-white rounded-xl">${t.emptyReports}</div>`;
+            if (!reports.length) return container.innerHTML = `<div class="text-center p-8 text-gray-400 bg-white rounded-2xl border border-gray-100">${t.emptyReports}</div>`;
 
             let html = '';
             reports.forEach(r => {
                 let safeUrl = r.url.trim().startsWith('http') ? r.url.trim() : 'https://' + r.url.trim();
                 html += `
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 mb-4">
-                    <div class="flex justify-between items-end border-b border-gray-100 pb-3 mb-3">
+                <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 mb-5 relative overflow-hidden">
+                    <!-- Accent bar at top -->
+                    <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-yellow to-brand-red"></div>
+                    
+                    <div class="flex justify-between items-end border-b border-gray-50 pb-4 mb-4 mt-1">
                         <div>
-                            <p class="text-[10px] font-bold text-gray-400 uppercase">${t.termLabel}</p>
-                            <h3 class="text-lg font-bold text-blue-600 leading-tight">${r.term}</h3>
+                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">${t.termLabel}</p>
+                            <h3 class="text-xl font-extrabold text-brand-darkred leading-tight mt-0.5">${r.term}</h3>
                         </div>
                         <div class="text-right">
-                             <p class="text-[10px] font-bold text-gray-400 uppercase">${t.programsLabel}</p>
-                             <p class="text-xs font-semibold text-gray-700">${r.programs}</p>
+                             <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">${t.programsLabel}</p>
+                             <p class="text-xs font-bold text-gray-700 bg-gray-100 px-2.5 py-1 rounded-md mt-1">${r.programs}</p>
                         </div>
                     </div>
-                    <p class="text-[10px] font-bold text-gray-400 uppercase mb-2">${t.summaryLabel}</p>
-                    <div class="bg-gray-50 p-3 rounded-lg border-l-4 border-blue-400 text-gray-700 text-sm leading-relaxed mb-4">
+                    
+                    <p class="text-[11px] font-bold text-brand-red uppercase tracking-wider mb-2 flex items-center">
+                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        ${t.summaryLabel}
+                    </p>
+                    <div class="bg-gradient-to-br from-brand-yellow/10 to-brand-red/5 p-4 rounded-2xl border border-brand-yellow/20 text-gray-700 text-sm leading-relaxed mb-5 font-medium shadow-inner">
                         ${r.summary}
                     </div>
-                    ${r.url ? `<a href="${safeUrl}" target="_blank" class="block w-full text-center bg-blue-50 text-blue-600 font-semibold py-3 rounded-lg hover:bg-blue-100 transition text-sm">
-                        <svg class="w-4 h-4 inline mr-1 -mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    ${r.url ? `<a href="${safeUrl}" target="_blank" class="flex justify-center items-center w-full bg-brand-red text-white font-bold py-3.5 rounded-xl hover:bg-brand-darkred hover:shadow-lg transition text-sm shadow-md shadow-brand-red/20">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         ${t.downloadBtn}
                     </a>` : ''}
                 </div>`;
